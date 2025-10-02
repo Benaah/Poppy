@@ -99,7 +99,7 @@ Poppy is an interactive, educational, and intelligent robot that is able to comm
 ### Quick Start
 ```bash
 # Clone the repository
-git clone https://github.com/Benaah/Poppy.git
+git clone [https://github.com/Benaah/Poppy.git](https://github.com/MarkYHZhang/Poppy.git)
 cd poppy-robot
 
 # Install Python dependencies
@@ -161,4 +161,5 @@ python3 python/poppy_main.py
 - [ ] Cloud integration and analytics
 - [ ] Extended battery life optimization
 - [ ] Advanced security features
+
 
