@@ -24,8 +24,14 @@ monitor/monitor.o: monitor/monitor.c
 pid/pid.o: pid/pid.c
 	$(CC) -o $@ $^ -c
 
-control: control.c pi-blaster/pi-blaster.o pi-blaster/mailbox.o imu/imu.o imu/vec.o monitor/monitor.o pid/pid.o imu/madgwick.o
-	$(CC) -o $@ $^ $(LIBS)
+spatial/spatial.o: spatial/spatial.c
+	$(CC) -o $@ $^ -c
+
+docking/docking.o: docking/docking.c
+	$(CC) -o $@ $^ -c
+
+control: control.c pi-blaster/pi-blaster.o pi-blaster/mailbox.o imu/imu.o imu/vec.o monitor/monitor.o pid/pid.o imu/madgwick.o spatial/spatial.o docking/docking.o
+	$(CC) -o $@ $^ $(LIBS) -lwiringPi
 
 clean:
-	rm -f imu/*.o pi-blaster/*.o monitor/*.o
+	rm -f imu/*.o pi-blaster/*.o monitor/*.o pid/*.o spatial/*.o docking/*.o

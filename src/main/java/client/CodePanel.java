@@ -3,33 +3,21 @@ package client;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import main.Poppy;
-import robot.JackyCoolLib;
 
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.border.Border;
-import javax.swing.text.JTextComponent;
-import java.awt.AWTException;
 import java.awt.BorderLayout;
-import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.Scanner;
 
 public class CodePanel extends JPanel{
@@ -201,11 +189,12 @@ public class CodePanel extends JPanel{
 
     private String readCode(){
         StringBuilder sb = new StringBuilder();
-        Scanner sc = new Scanner(codeArea.getText());
-        while (sc.hasNext()){
-            sb.append(sc.nextLine().trim());
-            sb.append(";");
-            sb.append("\n");
+        try (Scanner sc = new Scanner(codeArea.getText())) {
+            while (sc.hasNext()){
+                sb.append(sc.nextLine().trim());
+                sb.append(";");
+                sb.append("\n");
+            }
         }
         return sb.toString();
     }

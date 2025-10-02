@@ -58,7 +58,31 @@ public class Gui3D extends GuiComponent {
 
 		glLoadIdentity();
 
-		int y = 0;
+		// Connection status indicator
+		if (QuaternionVisualizer.isConnected.get()) {
+			glColor3f(0.0f, 1.0f, 0.0f);
+		} else {
+			glColor3f(1.0f, 0.0f, 0.0f);
+		}
+		FontUtil.drawText("Connection: " + (QuaternionVisualizer.isConnected.get() ? "CONNECTED" : "DISCONNECTED"), 
+		                 FontUtil.font16, 10, 10);
+		
+		// Robot status summary
+		QuaternionVisualizer.RobotStatus status = QuaternionVisualizer.robotStatus;
+		glColor3f(1.0f, 1.0f, 1.0f);
+		FontUtil.drawText("Battery: " + String.format("%.1f%%", status.batteryLevel * 100), FontUtil.font16, 10, 30);
+		FontUtil.drawText("Power Mode: " + status.powerMode, FontUtil.font16, 10, 50);
+		FontUtil.drawText("Lighting: " + status.lightingMode, FontUtil.font16, 10, 70);
+		FontUtil.drawText("Spatial: " + (status.spatialAwareness ? "ON" : "OFF"), FontUtil.font16, 10, 90);
+		FontUtil.drawText("Adaptive PID: " + (status.adaptivePID ? "ON" : "OFF"), FontUtil.font16, 10, 110);
+		FontUtil.drawText("Voice Control: " + (status.voiceControl ? "ON" : "OFF"), FontUtil.font16, 10, 130);
+		
+		// Keyboard controls help
+		glColor3f(0.7f, 0.7f, 0.7f);
+		FontUtil.drawText("Controls: F=Find Face, D=Dance, S=Stop, C=Calibrate", FontUtil.font16, 10, 150);
+		FontUtil.drawText("B=Battery, T=Status, M=Motor Test", FontUtil.font16, 10, 170);
+
+		int y = 190;
 		for(Monitor m : QuaternionVisualizer.monitorList) {
 			String txt = m.text();
 
@@ -110,6 +134,29 @@ public class Gui3D extends GuiComponent {
 
 		if(!Keyboard.isKeyDown(Keyboard.KEY_UP) && !Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
 			QuaternionVisualizer.handler.sendDouble(6, 0);
+		}
+		
+		// Enhanced keyboard controls for robot commands
+		if (Keyboard.isKeyDown(Keyboard.KEY_F)) {
+			QuaternionVisualizer.wsHandler.sendMessage("find_face");
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+			QuaternionVisualizer.wsHandler.sendMessage("dance");
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+			QuaternionVisualizer.wsHandler.sendMessage("stop");
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_C)) {
+			QuaternionVisualizer.wsHandler.sendMessage("calibrate");
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
+			QuaternionVisualizer.wsHandler.sendMessage("battery_status");
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_T)) {
+			QuaternionVisualizer.wsHandler.sendMessage("system_status");
+		}
+		if (Keyboard.isKeyDown(Keyboard.KEY_M)) {
+			QuaternionVisualizer.wsHandler.sendMessage("motor_test");
 		}
 
 		double ang = Math.toRadians(rx);

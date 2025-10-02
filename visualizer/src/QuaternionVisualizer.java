@@ -10,6 +10,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -18,12 +20,18 @@ public class QuaternionVisualizer {
 	public static int width, height;
 
 	public static NetworkHandler handler;
+	public static WebSocketHandler wsHandler;
 
 	public static HashMap<String, Integer> monitorInd = new HashMap<>();
 	public static ArrayList<Monitor> monitorList = new ArrayList<>();
 
 	public static GuiContainer mainGui;
 	public static boolean mouseInBounds;
+	
+	// Enhanced data structures for real-time monitoring
+	public static ConcurrentLinkedQueue<DataPoint> dataHistory = new ConcurrentLinkedQueue<>();
+	public static AtomicBoolean isConnected = new AtomicBoolean(false);
+	public static RobotStatus robotStatus = new RobotStatus();
 
 	public static void newMonitor(String name, Monitor monitor) {
 		monitor.name = name;
@@ -40,11 +48,37 @@ public class QuaternionVisualizer {
 	}
 
 	public static GuiAngle angle = new GuiAngle();
+	
+	// Data point class for historical data tracking
+	public static class DataPoint {
+		public long timestamp;
+		public String type;
+		public double[] values;
+		
+		public DataPoint(String type, double[] values) {
+			this.timestamp = System.currentTimeMillis();
+			this.type = type;
+			this.values = values.clone();
+		}
+	}
+	
+	// Robot status class for comprehensive monitoring
+	public static class RobotStatus {
+		public double batteryLevel = 0.0;
+		public double temperature = 0.0;
+		public boolean spatialAwareness = false;
+		public boolean adaptivePID = false;
+		public boolean voiceControl = false;
+		public String powerMode = "NORMAL";
+		public String lightingMode = "UNKNOWN";
+		public int faceDetectionCount = 0;
+		public double processingTime = 0.0;
+	}
 
 	public static void main(String[] args) throws LWJGLException {
 
-		Display.setTitle("Quaternion Visualizer");
-		Display.setDisplayMode(new DisplayMode(960, 540));
+		Display.setTitle("Poppy Robot Visualizer 2025");
+		Display.setDisplayMode(new DisplayMode(1280, 720));
 		Display.create();
 		Display.setVSyncEnabled(true);
 
@@ -55,12 +89,19 @@ public class QuaternionVisualizer {
 		Object3D.init();
 		GLUtil.init();
 
-		handler = new NetworkHandler(new InetSocketAddress("10.16.32.17", 8080));
+		// Enhanced network communication with both TCP and WebSocket
+		handler = new NetworkHandler(new InetSocketAddress("localhost", 8080));
+		wsHandler = new WebSocketHandler("ws://localhost:9999/socket/");
 
+		// Enhanced monitoring with new capabilities
 		newMonitor("dt", new MonitorDt());
 		newMonitor("imu", new MonitorIMU());
 		newMonitor("ori", new MonitorOrientation());
 		newMonitor("out", new MonitorOutput());
+		newMonitor("battery", new MonitorBattery());
+		newMonitor("spatial", new MonitorSpatial());
+		newMonitor("docking", new MonitorDocking());
+		newMonitor("face_detection", new MonitorFaceDetection());
 
 		Gui3D gui3D = new Gui3D();
 //		GuiTextfield tf = new GuiTextfield("\nasdfasdf\ntest\n\ntest");
@@ -110,6 +151,10 @@ public class QuaternionVisualizer {
 		Keyboard.enableRepeatEvents(true);
 
 		handler.start();
+		wsHandler.start();
+		
+		// Send initial command to get robot status
+		wsHandler.sendMessage("system_status");
 
 		double t = System.nanoTime() / 1e9;
 
@@ -118,6 +163,11 @@ public class QuaternionVisualizer {
 			double nt = System.nanoTime() / 1e9;
 			double dt = nt - t;
 			t = nt;
+			
+			// Update connection status
+			boolean tcpConnected = handler.socket != null && !handler.socket.isClosed();
+			boolean wsConnected = wsHandler != null && wsHandler.isConnected();
+			isConnected.set(tcpConnected || wsConnected);
 
 			if(width != Display.getWidth() || height != Display.getHeight()) {
 				width = Display.getWidth();
@@ -179,6 +229,18 @@ public class QuaternionVisualizer {
 			mainGui.render();
 
 			Display.update();
+		}
+
+		// Cleanup connections
+		if (wsHandler != null) {
+			wsHandler.stopHandler();
+		}
+		if (handler != null) {
+			try {
+				handler.socket.close();
+			} catch (Exception e) {
+				System.err.println("Error closing TCP connection: " + e.getMessage());
+			}
 		}
 
 		Display.destroy();

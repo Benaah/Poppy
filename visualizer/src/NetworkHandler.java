@@ -35,6 +35,26 @@ public class NetworkHandler extends Thread {
 						Monitor m = QuaternionVisualizer.getMonitor(splitted[0]);
 						if(m != null) {
 							m.onData(splitted[1]);
+							
+							// Store data point for historical tracking
+							if (splitted[1] != null && !splitted[1].isEmpty()) {
+								try {
+									String[] values = splitted[1].split("\\s+");
+									double[] dataValues = new double[values.length];
+									for (int i = 0; i < values.length; i++) {
+										dataValues[i] = Double.parseDouble(values[i]);
+									}
+									QuaternionVisualizer.dataHistory.offer(
+										new QuaternionVisualizer.DataPoint(splitted[0], dataValues));
+									
+									// Keep only last 1000 data points
+									while (QuaternionVisualizer.dataHistory.size() > 1000) {
+										QuaternionVisualizer.dataHistory.poll();
+									}
+								} catch (NumberFormatException e) {
+									// Skip non-numeric data
+								}
+							}
 						}
 					} catch(RuntimeException e) {
 						e.printStackTrace();

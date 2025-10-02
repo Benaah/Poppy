@@ -28,11 +28,12 @@ public class Poppy {
 
     public static void main(String[] args) {
         if(args.length==1&&args[0].equals("server")){
-
+            System.out.println("Starting Poppy Server on port " + SERVER_PORT);
+            
             Spark.exception(Exception.class, (exception, request, response) -> {
+                System.err.println("Server error: " + exception.getMessage());
                 exception.printStackTrace();
             });
-
 
             port(SERVER_PORT);
 
@@ -40,19 +41,57 @@ public class Poppy {
 
             webSocket("/socket", handler);
 
-
-            get("/getCode", (request, response) -> code);
+            // Enhanced API endpoints for hardware solutions
+            get("/getCode", (request, response) -> {
+                response.type("application/json");
+                return "{\"code\":\"" + code + "\",\"status\":\"success\"}";
+            });
 
             post("/updateCode", (request, response) -> {
-                rev=1;
-                code = compileCode(request.body());
-                handler.sendUpdateCodeQuery();
-                return "Received";
+                try {
+                    rev = 1;
+                    code = compileCode(request.body());
+                    handler.sendUpdateCodeQuery();
+                    response.type("application/json");
+                    return "{\"status\":\"success\",\"message\":\"Code updated successfully\"}";
+                } catch (Exception e) {
+                    response.status(400);
+                    response.type("application/json");
+                    return "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}";
+                }
+            });
+
+            // New API endpoints for enhanced features
+            get("/status", (request, response) -> {
+                response.type("application/json");
+                return "{\"status\":\"online\",\"version\":\"2025\",\"features\":[\"spatial_awareness\",\"adaptive_pid\",\"docking\",\"voice_control\"]}";
+            });
+
+            post("/command", (request, response) -> {
+                try {
+                    String command = request.body();
+                    // Send command directly to robot via WebSocket
+                    if (handler.getRobot() != null && handler.getRobot().isOpen()) {
+                        handler.getRobot().getRemote().sendString(command);
+                        response.type("application/json");
+                        return "{\"status\":\"success\",\"command\":\"" + command + "\"}";
+                    } else {
+                        response.status(503);
+                        response.type("application/json");
+                        return "{\"status\":\"error\",\"message\":\"Robot not connected\"}";
+                    }
+                } catch (Exception e) {
+                    response.status(400);
+                    response.type("application/json");
+                    return "{\"status\":\"error\",\"message\":\"" + e.getMessage() + "\"}";
+                }
             });
 
             init();
+            System.out.println("Poppy Server started successfully!");
 
         }else if(args.length==1&&args[0].equals("robot")){
+            System.out.println("Starting Poppy Robot...");
             new Robot();
         }else{//client end
             try {
@@ -60,6 +99,7 @@ public class Poppy {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            System.out.println("Starting Poppy Client...");
             new MainFrame();
         }
 
