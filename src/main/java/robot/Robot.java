@@ -1,7 +1,7 @@
 package robot;
 
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
 import main.Poppy;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;

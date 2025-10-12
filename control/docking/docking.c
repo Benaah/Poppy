@@ -36,12 +36,12 @@ int docking_init(docking_controller_t *controller) {
     
     // Initialize charging system
     if (charging_init(&controller->charging) < 0) {
-        printf("❌ Failed to initialize charging system\n");
+        printf(" Failed to initialize charging system\n");
         return -1;
     }
     
     g_docking_controller = controller;
-    printf("✅ Docking system initialized\n");
+    printf(" Docking system initialized\n");
     return 0;
 }
 
