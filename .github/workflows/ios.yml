@@ -1,0 +1,32 @@
+name: iOS CI (conditional)
+
+on:
+  push:
+    paths:
+      - 'Poppy/iosapp/**'
+      - '.github/workflows/ios.yml'
+  pull_request:
+    paths:
+      - 'Poppy/iosapp/**'
+      - '.github/workflows/ios.yml'
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    name: iOS Xcode listing
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: List Xcode projects
+        working-directory: Poppy/iosapp
+        run: |
+          find . -name "*.xcodeproj" -maxdepth 3 -print
+          for p in $(find . -name "*.xcodeproj" -maxdepth 3); do
+            echo "Project: $p";
+            xcodebuild -list -project "$p" || true;
+          done

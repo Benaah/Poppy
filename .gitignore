@@ -1,0 +1,121 @@
+# Global ignores for this workspace
+# OS junk
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+$RECYCLE.BIN/
+
+# Editor/IDE
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+*.code-workspace
+
+# Node/JS (if any subprojects)
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+.venv/
+venv/
+.env
+.env.*
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Java / Maven / Gradle
+*.class
+*.log
+*.ctxt
+hs_err_pid*
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+.mvnyml
+pom.xml.versionsBackup
+pom.xml.releaseBackup
+release.properties
+# Maven target dirs
+**/target/
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Android
+**/androidapp/build/
+**/android/build/
+*.apk
+*.ap_ 
+*.aab
+captures/
+*.keystore
+*.jks
+
+# iOS / Xcode
+**/iosapp/**/build/
+**/DerivedData/
+*.xcuserdatad
+*.xcscmblueprint
+*.xcworkspace/
+
+# Rust
+# Ignore target directories for all Rust crates in the workspace
+**/target/
+# Cargo lockfiles for libraries; keep at root application crates if any
+PoppyVerseOS/Cargo.lock
+Poppy/Cargo.lock
+
+# C/C++ (Makefile builds)
+**/*.o
+**/*.obj
+**/*.so
+**/*.dll
+**/*.dylib
+**/*.a
+**/*.lib
+**/*.exp
+**/*.pdb
+**/*.exe
+**/control/control
+**/pi-blaster/pi-blaster
+**/pi-blaster/pi-blaster.exe
+**/imu/matmul
+**/imu/calib_gen
+
+# Logs and temp
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+*.cache
+.cache/
+*.log
+logs/
+
+# Generated artifacts
+*.generated
+*.gen
+
+# Visualizer build outputs
+visualizer/bin/
+visualizer/obj/
+visualizer/out/
+
+# Android/Gradle local properties
+local.properties
+
+# Misc
+*.DS_Store
+*.Thumbs.db

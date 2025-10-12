@@ -1,0 +1,38 @@
+name: Java CI
+
+on:
+  push:
+    paths:
+      - 'Poppy/**'
+      - '.github/workflows/java.yml'
+  pull_request:
+    paths:
+      - 'Poppy/**'
+      - '.github/workflows/java.yml'
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  maven-build:
+    name: Build Java (Maven)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: 'maven'
+
+      - name: Build with Maven
+        working-directory: Poppy
+        run: mvn -B -ntp -DskipTests package
+
+      - name: Run unit tests
+        working-directory: Poppy
+        run: mvn -B -ntp test

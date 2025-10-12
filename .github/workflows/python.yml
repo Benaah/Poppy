@@ -1,0 +1,55 @@
+name: Python CI
+
+on:
+  push:
+    paths:
+      - 'Poppy/python/**'
+      - '.github/workflows/python.yml'
+  pull_request:
+    paths:
+      - 'Poppy/python/**'
+      - '.github/workflows/python.yml'
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Lint and import-check Python
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install requirements (best-effort)
+        working-directory: Poppy/python
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements_2025.txt ]; then pip install -r requirements_2025.txt || true; fi
+
+      - name: Quick import check
+        working-directory: Poppy/python
+        run: |
+          python - << 'PY'
+          import importlib, pathlib
+          failed = []
+          for p in pathlib.Path('.').glob('*.py'):
+              if p.name.startswith('_'):
+                  continue
+              try:
+                  importlib.import_module(p.stem)
+              except Exception as e:
+                  failed.append((p.name, str(e)))
+          if failed:
+              print('Import failures:')
+              for f in failed:
+                  print(' -', f[0], ':', f[1])
+              raise SystemExit(1)
+          print('All python modules imported successfully')
+          PY
