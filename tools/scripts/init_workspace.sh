@@ -186,7 +186,7 @@ cd "${ROS2_WS}"
 colcon build --symlink-install
 
 echo -e "\n${GREEN}================================================${NC}"
-echo -e "${GREEN}  ✓ ROS2 workspace initialized successfully!${NC}"
+echo -e "${GREEN}  [OK] ROS2 workspace initialized successfully!${NC}"
 echo -e "${GREEN}================================================${NC}"
 echo ""
 echo "Next steps:"

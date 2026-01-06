@@ -56,7 +56,7 @@ def connect_websocket():
 	try:
 		ws = create_connection("ws://localhost:9999/socket/", timeout=5)
 		connection_retry_count = 0
-		print("✓ WebSocket connected to Poppy control system")
+		print("[OK] WebSocket connected to Poppy control system")
 		return True
 	except Exception as e:
 		connection_retry_count += 1
@@ -97,7 +97,7 @@ class EnhancedVisionProcessor:
 		# Obstacle detection (simplified for integration)
 		self.obstacle_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")  # Fallback
 		
-		print("✓ Enhanced Vision Processor initialized with advanced face detection")
+		print("[OK] Enhanced Vision Processor initialized with advanced face detection")
 	
 	def detect_faces(self, frame):
 		"""Detect faces using advanced face detection system"""
@@ -248,17 +248,17 @@ def process_event(event):
 	"""
 	if event.type == EventType.ON_CONVERSATION_TURN_STARTED:
 		print()
-		print("✓ Conversation started")
+		print("[OK] Conversation started")
 
 	print(event)
 
 	if (event.type == EventType.ON_CONVERSATION_TURN_FINISHED and
 			event.args and not event.args['with_follow_on_turn']):
 		print()
-		print("✓ Conversation finished")
+		print("[OK] Conversation finished")
 	
 	if event.type == EventType.ON_DEVICE_ACTION:
-		print("✓ Device action received:")
+		print("[OK] Device action received:")
 		for command, params in event.actions:
 			print(f"  Command: {command}")
 			print(f"  Params: {params}")
@@ -266,13 +266,13 @@ def process_event(event):
 			process_poppy_command(command, params)
 	
 	if event.type == EventType.ON_RECOGNIZING_SPEECH_FINISHED:
-		print(f"✓ Speech recognized: {event.args['text']}")
+		print(f"[OK] Speech recognized: {event.args['text']}")
 	
 	if event.type == EventType.ON_RESPONDING_STARTED:
-		print("💭 Assistant responding...")
+		print("[THINK] Assistant responding...")
 	
 	if event.type == EventType.ON_RESPONDING_FINISHED:
-		print("✓ Response complete")
+		print("[OK] Response complete")
 
 def process_poppy_command(command, params):
 	"""Process specific commands for Poppy robot control."""
@@ -376,7 +376,7 @@ def main():
 		device_id = assistant.device_id
 		print('device_model_id:', device_model_id)
 		print('device_id:', device_id + '\n')
-		print("✓ Google Assistant ready. Say 'Hey Google' to start!")
+		print("[OK] Google Assistant ready. Say 'Hey Google' to start!")
 
 		# Re-register if "device_id" is different from the last "device_id":
 		if should_register or (device_id != last_device_id):
@@ -395,7 +395,7 @@ def main():
 
 				for event in events:
 					if event.type == EventType.ON_CONVERSATION_TURN_STARTED:
-						print("✓ AI Face Detection Started")
+						print("[OK] AI Face Detection Started")
 						run = True
 						search_count = 0
 						max_search_attempts = 50  # Prevent infinite search
@@ -410,9 +410,9 @@ def main():
 								edges = results['edges']
 								lighting_mode = results['lighting_mode']
 								
-								print(f"🔍 Enhanced AI Processing - Faces: {len(faces)}, Obstacles: {len(obstacles)}, Edges: {len(edges)}")
-								print(f"⚡ Processing Time: {results['processing_time']:.3f}s (Avg: {results['avg_processing_time']:.3f}s)")
-								print(f"💡 Lighting Mode: {lighting_mode}")
+								print(f"[SEARCH] Enhanced AI Processing - Faces: {len(faces)}, Obstacles: {len(obstacles)}, Edges: {len(edges)}")
+								print(f"[PERF] Processing Time: {results['processing_time']:.3f}s (Avg: {results['avg_processing_time']:.3f}s)")
+								print(f"[LIGHT] Lighting Mode: {lighting_mode}")
 								
 								# Check for obstacles and edges for safety
 								if obstacles:
@@ -425,7 +425,7 @@ def main():
 								
 								# Look for faces with enhanced detection
 								if faces:
-									print("✓ Face found with Enhanced AI!")
+									print("[OK] Face found with Enhanced AI!")
 									# Calculate face position for better tracking
 									largest_face = max(faces, key=lambda f: f[2] * f[3])  # Largest face by area
 									x, y, w, h = largest_face

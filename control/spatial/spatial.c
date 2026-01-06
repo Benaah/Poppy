@@ -27,7 +27,7 @@ int spatial_init(spatial_awareness_t *spatial) {
         return -1;
     }
     
-    printf("✓ Spatial awareness system initialized\n");
+    printf("[OK] Spatial awareness system initialized\n");
     return 0;
 }
 
@@ -50,7 +50,7 @@ int spatial_add_sensor(spatial_awareness_t *spatial, uint8_t trigger_pin, uint8_
     digitalWrite(trigger_pin, LOW);
     
     spatial->sensor_count++;
-    printf("✓ Added ultrasonic sensor: trigger=%d, echo=%d\n", trigger_pin, echo_pin);
+    printf("[OK] Added ultrasonic sensor: trigger=%d, echo=%d\n", trigger_pin, echo_pin);
     return spatial->sensor_count - 1;
 }
 
@@ -346,11 +346,11 @@ double spatial_get_safe_turn(spatial_awareness_t *spatial, double desired_turn) 
 
 void spatial_emergency_stop(spatial_awareness_t *spatial) {
     spatial->emergency_stop = 1;
-    printf("⚠️  EMERGENCY STOP: Obstacle/Edge detected at %.1f cm\n", 
+    printf("[WARN]  EMERGENCY STOP: Obstacle/Edge detected at %.1f cm\n", 
            spatial->obstacle_detected ? spatial->obstacle_distance : spatial->edge_distance);
 }
 
 void spatial_reset_emergency(spatial_awareness_t *spatial) {
     spatial->emergency_stop = 0;
-    printf("✓ Emergency stop cleared\n");
+    printf("[OK] Emergency stop cleared\n");
 }

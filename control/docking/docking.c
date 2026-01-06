@@ -62,7 +62,7 @@ void docking_update(docking_controller_t *controller) {
         case DOCKING_IDLE:
             // Wait for docking command or low battery
             if (controller->charging.battery_percentage < controller->min_battery_level) {
-                printf("🔋 Low battery detected (%.1f%%), starting docking sequence\n", 
+                printf("[BATTERY] Low battery detected (%.1f%%), starting docking sequence\n", 
                        controller->charging.battery_percentage);
                 docking_start_search(controller);
             }
@@ -70,32 +70,32 @@ void docking_update(docking_controller_t *controller) {
             
         case DOCKING_SEARCHING:
             if (docking_detect_station(controller)) {
-                printf("🎯 Docking station detected at %.1f cm, %.1f°\n", 
+                printf("[TARGET] Docking station detected at %.1f cm, %.1f°\n", 
                        controller->station.distance, controller->station.angle);
                 controller->state = DOCKING_APPROACHING;
             } else {
                 // Continue searching
-                printf("🔍 Searching for docking station...\n");
+                printf("[SEARCH] Searching for docking station...\n");
             }
             break;
             
         case DOCKING_APPROACHING:
             if (docking_approach_station(controller)) {
-                printf("📍 Approached docking station\n");
+                printf("[LOC] Approached docking station\n");
                 controller->state = DOCKING_ALIGNING;
             }
             break;
             
         case DOCKING_ALIGNING:
             if (docking_align_with_station(controller)) {
-                printf("🎯 Aligned with docking station\n");
+                printf("[TARGET] Aligned with docking station\n");
                 controller->state = DOCKING_CONNECTING;
             }
             break;
             
         case DOCKING_CONNECTING:
             if (docking_connect(controller)) {
-                printf("🔌 Connected to docking station\n");
+                printf("[CONN] Connected to docking station\n");
                 controller->state = DOCKING_CHARGING;
                 docking_start_charging(controller);
             }
@@ -103,11 +103,11 @@ void docking_update(docking_controller_t *controller) {
             
         case DOCKING_CHARGING:
             if (charging_is_complete(&controller->charging)) {
-                printf("✅ Charging complete (%.1f%%)\n", 
+                printf("[OK] Charging complete (%.1f%%)\n", 
                        controller->charging.battery_percentage);
                 controller->state = DOCKING_COMPLETE;
             } else {
-                printf("🔋 Charging... %.1f%% (%.1fV, %.1fA)\n", 
+                printf("[BATTERY] Charging... %.1f%% (%.1fV, %.1fA)\n", 
                        controller->charging.battery_percentage,
                        controller->charging.voltage,
                        controller->charging.current);
@@ -115,12 +115,12 @@ void docking_update(docking_controller_t *controller) {
             break;
             
         case DOCKING_ERROR:
-            printf("❌ Docking error occurred\n");
+            printf("[ERROR] Docking error occurred\n");
             controller->state = DOCKING_IDLE;
             break;
             
         case DOCKING_COMPLETE:
-            printf("✅ Docking sequence complete\n");
+            printf("[OK] Docking sequence complete\n");
             controller->state = DOCKING_IDLE;
             break;
     }
@@ -133,7 +133,7 @@ int docking_start_search(docking_controller_t *controller) {
     controller->docking_attempts++;
     clock_gettime(CLOCK_MONOTONIC, &controller->docking_start_time);
     
-    printf("🔍 Starting docking station search (attempt %d)\n", controller->docking_attempts);
+    printf("[SEARCH] Starting docking station search (attempt %d)\n", controller->docking_attempts);
     return 0;
 }
 
@@ -153,7 +153,7 @@ int docking_approach_station(docking_controller_t *controller) {
         double turn_speed = angle * 0.1;  // Proportional turn
         
         // Send movement commands (this would interface with the main control system)
-        printf("📤 Approach: move=%.2f, turn=%.2f (dist=%.1f, angle=%.1f)\n", 
+        printf("[SEND] Approach: move=%.2f, turn=%.2f (dist=%.1f, angle=%.1f)\n", 
                forward_speed, turn_speed, distance, angle);
         
         // Simulate movement (in real implementation, this would send actual commands)
@@ -176,7 +176,7 @@ int docking_align_with_station(docking_controller_t *controller) {
         // Align with station
         double turn_speed = angle * 0.05;  // Fine alignment
         
-        printf("📤 Align: turn=%.2f (angle=%.1f°)\n", turn_speed, angle);
+        printf("[SEND] Align: turn=%.2f (angle=%.1f°)\n", turn_speed, angle);
         
         // Simulate alignment
         controller->station.angle *= 0.8;
@@ -195,10 +195,10 @@ int docking_connect(docking_controller_t *controller) {
     connection_attempts++;
     
     if (connection_attempts < 5) {
-        printf("🔌 Connecting to docking station... (attempt %d)\n", connection_attempts);
+        printf("[CONN] Connecting to docking station... (attempt %d)\n", connection_attempts);
         return 0;  // Still connecting
     } else {
-        printf("✅ Connected to docking station\n");
+        printf("[OK] Connected to docking station\n");
         connection_attempts = 0;
         return 1;  // Connected
     }
@@ -211,7 +211,7 @@ int docking_start_charging(docking_controller_t *controller) {
     clock_gettime(CLOCK_MONOTONIC, &controller->charging.charge_start_time);
     controller->charging.is_charging = 1;
     
-    printf("🔋 Started charging\n");
+    printf("[BATTERY] Started charging\n");
     return 0;
 }
 
@@ -222,7 +222,7 @@ int docking_undock(docking_controller_t *controller) {
     controller->charging.is_charging = 0;
     controller->state = DOCKING_IDLE;
     
-    printf("🔌 Undocked from charging station\n");
+    printf("[CONN] Undocked from charging station\n");
     return 0;
 }
 
@@ -276,7 +276,7 @@ int charging_init(charging_system_t *charging) {
     charging->is_charging = 0;
     charging->state = CHARGING_DISCONNECTED;
     
-    printf("✅ Charging system initialized\n");
+    printf("[OK] Charging system initialized\n");
     return 0;
 }
 
@@ -325,7 +325,7 @@ int docking_check_safety(docking_controller_t *controller) {
     
     // Check battery level
     if (controller->charging.battery_percentage < 5.0) {
-        printf("⚠️  Critical battery level: %.1f%%\n", controller->charging.battery_percentage);
+        printf("[WARN]  Critical battery level: %.1f%%\n", controller->charging.battery_percentage);
         return 0;
     }
     
@@ -336,13 +336,13 @@ int docking_check_safety(docking_controller_t *controller) {
                      (current_time.tv_nsec - controller->docking_start_time.tv_nsec) / 1e9;
     
     if (elapsed > controller->max_docking_time) {
-        printf("⚠️  Docking timeout: %.1f seconds\n", elapsed);
+        printf("[WARN]  Docking timeout: %.1f seconds\n", elapsed);
         return 0;
     }
     
     // Check emergency stop
     if (controller->emergency_stop) {
-        printf("⚠️  Emergency stop active\n");
+        printf("[WARN]  Emergency stop active\n");
         return 0;
     }
     
@@ -355,7 +355,7 @@ void docking_emergency_stop(docking_controller_t *controller) {
     controller->emergency_stop = 1;
     controller->state = DOCKING_ERROR;
     
-    printf("🛑 EMERGENCY STOP: Docking sequence aborted\n");
+    printf("[STOP] EMERGENCY STOP: Docking sequence aborted\n");
 }
 
 int docking_is_safe_to_dock(docking_controller_t *controller) {

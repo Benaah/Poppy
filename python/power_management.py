@@ -75,7 +75,7 @@ class SmartPowerManager:
         try:
             # Test BMS communication
             self.read_battery_status()
-            logger.info("✓ BMS communication established")
+            logger.info("[OK] BMS communication established")
         except Exception as e:
             logger.warning(f"BMS communication failed: {e}")
             logger.info("Using simulated battery data")

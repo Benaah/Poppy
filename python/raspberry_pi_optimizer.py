@@ -63,7 +63,7 @@ class RaspberryPiOptimizer:
         try:
             gpus = tf.config.experimental.list_physical_devices('GPU')
             if gpus:
-                logger.info(f"✓ GPU available: {len(gpus)} device(s)")
+                logger.info(f"[OK] GPU available: {len(gpus)} device(s)")
                 return True
             else:
                 logger.info("No GPU available, using CPU")
@@ -90,7 +90,7 @@ class RaspberryPiOptimizer:
                     [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=2048)]
                 )
                 
-                logger.info("✓ GPU configured for optimal performance")
+                logger.info("[OK] GPU configured for optimal performance")
         except Exception as e:
             logger.error(f"GPU configuration failed: {e}")
     
@@ -100,7 +100,7 @@ class RaspberryPiOptimizer:
         try:
             with open('/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor', 'w') as f:
                 f.write('performance')
-            logger.info("✓ CPU governor set to performance mode")
+            logger.info("[OK] CPU governor set to performance mode")
         except Exception as e:
             logger.warning(f"Could not set CPU governor: {e}")
         
@@ -117,7 +117,7 @@ class RaspberryPiOptimizer:
             buffer = np.zeros((480, 640, 3), dtype=np.uint8)
             self.memory_pool.append(buffer)
         
-        logger.info(f"✓ Memory pool initialized with {self.memory_pool_size} buffers")
+        logger.info(f"[OK] Memory pool initialized with {self.memory_pool_size} buffers")
     
     def get_memory_buffer(self):
         """Get a memory buffer from the pool"""
@@ -143,7 +143,7 @@ class RaspberryPiOptimizer:
             tf.config.threading.set_intra_op_parallelism_threads(2)
             tf.config.threading.set_inter_op_parallelism_threads(2)
             
-            logger.info("✓ TensorFlow configured for optimal performance")
+            logger.info("[OK] TensorFlow configured for optimal performance")
         except Exception as e:
             logger.warning(f"TensorFlow configuration failed: {e}")
     

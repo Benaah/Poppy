@@ -97,11 +97,11 @@ class UnifiedVoiceControl:
         self.provider_configs = {
             VoiceProvider.GOOGLE_ASSISTANT: {
                 "wake_words": ["hey google", "ok google"],
-                "response_prefix": "🤖 Google Assistant:"
+                "response_prefix": "[Google Assistant]:"
             },
             VoiceProvider.ALEXA: {
                 "wake_words": ["alexa", "amazon"],
-                "response_prefix": "🤖 Alexa:"
+                "response_prefix": "[Alexa]:"
             }
         }
     
@@ -111,10 +111,10 @@ class UnifiedVoiceControl:
             from websocket import create_connection
             self.ws = create_connection(self.websocket_url, timeout=5)
             self.is_connected = True
-            logger.info("✅ WebSocket connected to Poppy control system")
+            logger.info("[OK] WebSocket connected to Poppy control system")
             return True
         except Exception as e:
-            logger.error(f"❌ WebSocket connection failed: {e}")
+            logger.error(f"[ERROR] WebSocket connection failed: {e}")
             self.is_connected = False
             return False
     
@@ -123,22 +123,22 @@ class UnifiedVoiceControl:
         try:
             if not self.is_connected:
                 if not self.connect_websocket():
-                    logger.error("❌ Cannot send command - no WebSocket connection")
+                    logger.error("[ERROR] Cannot send command - no WebSocket connection")
                     return False
             
             self.ws.send(command)
-            prefix = self.provider_configs.get(provider, {}).get("response_prefix", "🤖")
+            prefix = self.provider_configs.get(provider, {}).get("response_prefix", "[Robot]")
             logger.info(f"{prefix} Sent command: {command}")
             return True
         except Exception as e:
-            logger.error(f"❌ WebSocket send failed: {e}")
+            logger.error(f"[ERROR] WebSocket send failed: {e}")
             self.is_connected = False
             return False
     
     def process_voice_command(self, command_text, provider=None):
         """Process voice command and execute appropriate action."""
         command_text = command_text.lower().strip()
-        logger.info(f"🎤 Processing voice command: '{command_text}' (Provider: {provider})")
+        logger.info(f"[VOICE] Processing voice command: '{command_text}' (Provider: {provider})")
         
         # Add to command history
         self.command_history.append({
@@ -158,11 +158,11 @@ class UnifiedVoiceControl:
                     action_func(command_text, provider)
                     return True
                 except Exception as e:
-                    logger.error(f"❌ Error executing command '{voice_pattern}': {e}")
+                    logger.error(f"[ERROR] Error executing command '{voice_pattern}': {e}")
                     return False
         
         # No matching command found
-        logger.warning(f"⚠️  Unknown command: '{command_text}'")
+        logger.warning(f"[WARN]  Unknown command: '{command_text}'")
         return False
     
     # Robot movement commands
@@ -170,65 +170,65 @@ class UnifiedVoiceControl:
         """Move robot forward."""
         distance = self.extract_number(command_text, default=0.1)
         self.safe_send_command(f"move,{distance}", provider)
-        logger.info(f"🤖 Moving forward {distance}m")
+        logger.info(f"[Robot] Moving forward {distance}m")
     
     def move_backward(self, command_text, provider=None):
         """Move robot backward."""
         distance = self.extract_number(command_text, default=0.1)
         self.safe_send_command(f"move,-{distance}", provider)
-        logger.info(f"🤖 Moving backward {distance}m")
+        logger.info(f"[Robot] Moving backward {distance}m")
     
     def turn_left(self, command_text, provider=None):
         """Turn robot left."""
         angle = self.extract_number(command_text, default=5)
         self.safe_send_command(f"turn,{angle}", provider)
-        logger.info(f"🤖 Turning left {angle}°")
+        logger.info(f"[Robot] Turning left {angle}°")
     
     def turn_right(self, command_text, provider=None):
         """Turn robot right."""
         angle = self.extract_number(command_text, default=5)
         self.safe_send_command(f"turn,-{angle}", provider)
-        logger.info(f"🤖 Turning right {angle}°")
+        logger.info(f"[Robot] Turning right {angle}°")
     
     def stop_robot(self, command_text, provider=None):
         """Stop robot movement."""
         self.safe_send_command("move,0", provider)
         self.safe_send_command("turn,0", provider)
-        logger.info("🤖 Robot stopped")
+        logger.info("[Robot] Robot stopped")
     
     def find_face(self, command_text, provider=None):
         """Start face detection and tracking."""
         self.safe_send_command("find_face", provider)
-        logger.info("🤖 Starting face search...")
+        logger.info("[Robot] Starting face search...")
     
     def come_here(self, command_text, provider=None):
         """Make robot approach the user."""
         self.safe_send_command("move,0.2", provider)
-        logger.info("🤖 Coming to you!")
+        logger.info("[Robot] Coming to you!")
     
     def follow_me(self, command_text, provider=None):
         """Start following mode."""
         self.safe_send_command("follow_mode", provider)
-        logger.info("🤖 Following mode activated!")
+        logger.info("[Robot] Following mode activated!")
     
     def go_home(self, command_text, provider=None):
         """Return robot to home position."""
         self.safe_send_command("go_home", provider)
-        logger.info("🤖 Returning to home position...")
+        logger.info("[Robot] Returning to home position...")
     
     def get_status(self, command_text, provider=None):
         """Get robot status."""
-        logger.info("🤖 Poppy status: Active and ready")
+        logger.info("[Robot] Poppy status: Active and ready")
         # Could implement actual status checking here
     
     def get_battery_status(self, command_text, provider=None):
         """Get battery status."""
-        logger.info("🤖 Battery status: Good")
+        logger.info("[Robot] Battery status: Good")
         # Could implement actual battery checking here
     
     def get_health_status(self, command_text, provider=None):
         """Get robot health status."""
-        logger.info("🤖 Health status: All systems operational")
+        logger.info("[Robot] Health status: All systems operational")
         # Could implement actual health checking here
     
     def dance(self, command_text, provider=None):
@@ -241,12 +241,12 @@ class UnifiedVoiceControl:
         for cmd in dance_commands:
             self.safe_send_command(cmd, provider)
             time.sleep(0.5)
-        logger.info("🤖 Dance complete!")
+        logger.info("[Robot] Dance complete!")
     
     def spin(self, command_text, provider=None):
         """Make robot spin."""
         self.safe_send_command("turn,360", provider)
-        logger.info("🤖 Spinning!")
+        logger.info("[Robot] Spinning!")
     
     def wave(self, command_text, provider=None):
         """Make robot wave."""
@@ -255,7 +255,7 @@ class UnifiedVoiceControl:
         for cmd in wave_commands:
             self.safe_send_command(cmd, provider)
             time.sleep(0.3)
-        logger.info("🤖 Wave complete!")
+        logger.info("[Robot] Wave complete!")
     
     def nod(self, command_text, provider=None):
         """Make robot nod."""
@@ -264,97 +264,97 @@ class UnifiedVoiceControl:
         for cmd in nod_commands:
             self.safe_send_command(cmd, provider)
             time.sleep(0.5)
-        logger.info("🤖 Nod complete!")
+        logger.info("[Robot] Nod complete!")
     
     def restart_robot(self, command_text, provider=None):
         """Restart robot systems."""
         self.safe_send_command("restart", provider)
-        logger.info("🤖 Restarting robot systems...")
+        logger.info("[Robot] Restarting robot systems...")
     
     def calibrate_sensors(self, command_text, provider=None):
         """Calibrate robot sensors."""
         self.safe_send_command("calibrate", provider)
-        logger.info("🤖 Calibrating sensors...")
+        logger.info("[Robot] Calibrating sensors...")
     
     def run_tests(self, command_text, provider=None):
         """Run system tests."""
         self.safe_send_command("test", provider)
-        logger.info("🤖 Running system tests...")
+        logger.info("[Robot] Running system tests...")
     
     # Docking commands
     def dock_robot(self, command_text, provider=None):
         """Start docking sequence."""
         self.safe_send_command("docking_start", provider)
-        logger.info("🤖 Starting docking sequence...")
+        logger.info("[Robot] Starting docking sequence...")
     
     def undock_robot(self, command_text, provider=None):
         """Stop docking and undock."""
         self.safe_send_command("docking_stop", provider)
-        logger.info("🤖 Undocking from charging station...")
+        logger.info("[Robot] Undocking from charging station...")
     
     # Enhanced status commands
     def get_system_status(self, command_text, provider=None):
         """Get comprehensive system status."""
         self.safe_send_command("system_status", provider)
-        logger.info("🤖 Getting system status...")
+        logger.info("[Robot] Getting system status...")
     
     # Emergency commands
     def emergency_stop(self, command_text, provider=None):
         """Emergency stop all systems."""
         self.safe_send_command("emergency_stop", provider)
-        logger.info("🛑 EMERGENCY STOP ACTIVATED")
+        logger.info("[STOP] EMERGENCY STOP ACTIVATED")
     
     # Calibration commands
     def calibrate_imu(self, command_text, provider=None):
         """Calibrate IMU sensors."""
         self.safe_send_command("imu_calibrate", provider)
-        logger.info("🤖 Calibrating IMU sensors...")
+        logger.info("[Robot] Calibrating IMU sensors...")
     
     def calibrate_spatial(self, command_text, provider=None):
         """Calibrate spatial awareness system."""
         self.safe_send_command("spatial_calibrate", provider)
-        logger.info("🤖 Calibrating spatial awareness...")
+        logger.info("[Robot] Calibrating spatial awareness...")
     
     def calibrate_docking(self, command_text, provider=None):
         """Calibrate docking system."""
         self.safe_send_command("docking_calibrate", provider)
-        logger.info("🤖 Calibrating docking system...")
+        logger.info("[Robot] Calibrating docking system...")
     
     def test_motors(self, command_text, provider=None):
         """Test motor functionality."""
         self.safe_send_command("motor_test", provider)
-        logger.info("🤖 Testing motors...")
+        logger.info("[Robot] Testing motors...")
     
     # Feature toggle commands
     def enable_spatial_awareness(self, command_text, provider=None):
         """Enable spatial awareness system."""
         self.safe_send_command("spatial_awareness_on", provider)
-        logger.info("🤖 Spatial awareness enabled")
+        logger.info("[Robot] Spatial awareness enabled")
     
     def disable_spatial_awareness(self, command_text, provider=None):
         """Disable spatial awareness system."""
         self.safe_send_command("spatial_awareness_off", provider)
-        logger.info("🤖 Spatial awareness disabled")
+        logger.info("[Robot] Spatial awareness disabled")
     
     def enable_adaptive_pid(self, command_text, provider=None):
         """Enable adaptive PID control."""
         self.safe_send_command("adaptive_pid_on", provider)
-        logger.info("🤖 Adaptive PID enabled")
+        logger.info("[Robot] Adaptive PID enabled")
     
     def disable_adaptive_pid(self, command_text, provider=None):
         """Disable adaptive PID control."""
         self.safe_send_command("adaptive_pid_off", provider)
-        logger.info("🤖 Adaptive PID disabled")
+        logger.info("[Robot] Adaptive PID disabled")
     
     def enable_voice_control(self, command_text, provider=None):
         """Enable voice control system."""
         self.safe_send_command("voice_control_on", provider)
-        logger.info("🤖 Voice control enabled")
+        logger.info("[Robot] Voice control enabled")
     
     def disable_voice_control(self, command_text, provider=None):
         """Disable voice control system."""
         self.safe_send_command("voice_control_off", provider)
-        logger.info("🤖 Voice control disabled")
+        logger.info("[Robot] Voice control disabled")
     
     def extract_number(self, text, default=1.0):
         """Extract number from command text."""
@@ -372,11 +372,11 @@ class UnifiedVoiceControl:
         self.active_providers = set(providers)
         self.running = True
         
-        logger.info(f"🎤 Unified voice control started with providers: {[p.value for p in self.active_providers]}")
+        logger.info(f"[VOICE] Unified voice control started with providers: {[p.value for p in self.active_providers]}")
         
         # Connect to WebSocket
         if not self.connect_websocket():
-            logger.error("❌ Failed to start voice control - no WebSocket connection")
+            logger.error("[ERROR] Failed to start voice control - no WebSocket connection")
             return False
         
         # Start command processing thread
@@ -391,7 +391,7 @@ class UnifiedVoiceControl:
         self.running = False
         if self.ws:
             self.ws.close()
-        logger.info("🛑 Unified voice control stopped")
+        logger.info("[STOP] Unified voice control stopped")
     
     def _process_commands(self):
         """Process commands from the queue."""
@@ -406,7 +406,7 @@ class UnifiedVoiceControl:
             except queue.Empty:
                 continue
             except Exception as e:
-                logger.error(f"❌ Error processing commands: {e}")
+                logger.error(f"[ERROR] Error processing commands: {e}")
     
     def add_command(self, command_text, provider=None):
         """Add a command to the processing queue."""
@@ -429,7 +429,7 @@ def main():
     voice_control = UnifiedVoiceControl()
     
     if voice_control.start_voice_control():
-        print("🎤 Unified voice control ready!")
+        print("[VOICE] Unified voice control ready!")
         print("Available commands:", voice_control.get_available_commands())
         
         # Simulate voice commands for testing
@@ -442,18 +442,18 @@ def main():
         ]
         
         for cmd, provider in test_commands:
-            print(f"\n🎤 Simulating: '{cmd}' ({provider.value})")
+            print(f"\n[VOICE] Simulating: '{cmd}' ({provider.value})")
             voice_control.process_voice_command(cmd, provider)
             time.sleep(2)
         
         # Show command history
-        print("\n📋 Command History:")
+        print("\n[HISTORY] Command History:")
         for cmd in voice_control.get_command_history(5):
             print(f"  {cmd['timestamp']}: {cmd['command']} ({cmd['provider']})")
         
         voice_control.stop_voice_control()
     else:
-        print("❌ Failed to start unified voice control")
+        print("[ERROR] Failed to start unified voice control")
 
 if __name__ == "__main__":
     main()

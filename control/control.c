@@ -81,14 +81,14 @@ int main() {
 		spatial_add_sensor(&spatial_system, 23, 24);  // Front sensor
 		spatial_add_sensor(&spatial_system, 25, 26);  // Left sensor
 		spatial_add_sensor(&spatial_system, 27, 28);  // Right sensor
-		printf("✓ Spatial awareness system initialized with %d sensors\n", spatial_system.sensor_count);
+		printf("[OK] Spatial awareness system initialized with %d sensors\n", spatial_system.sensor_count);
 	}
 
 	// Initialize docking and charging system
 	if (docking_init(&docking_system) < 0) {
 		printf("Warning: Failed to initialize docking system\n");
 	} else {
-		printf("✓ Docking and charging system initialized\n");
+		printf("[OK] Docking and charging system initialized\n");
 	}
 
 	int cfd = open("/tmp/poppypipe", O_RDONLY);
@@ -319,7 +319,7 @@ int main() {
 		if (spatial_system.emergency_stop) {
 			output = 0.0;
 			turn = 0.0;
-			printf("⚠️  Emergency stop active - obstacle/edge detected\n");
+			printf("[WARN]  Emergency stop active - obstacle/edge detected\n");
 		}
 
 		move(output, turn);

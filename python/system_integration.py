@@ -208,21 +208,21 @@ class PoppySystemIntegration:
             
             # Start power management
             self.power_manager.start_monitoring()
-            logger.info("✓ Power management started")
+            logger.info("[OK] Power management started")
             
             # Start Raspberry Pi optimization
             self.pi_optimizer.start_monitoring()
-            logger.info("✓ Raspberry Pi optimization started")
+            logger.info("[OK] Raspberry Pi optimization started")
             
             # Start I2C communication
             self.i2c_comm.start_status_monitoring()
-            logger.info("✓ I2C communication started")
+            logger.info("[OK] I2C communication started")
             
             # Initialize voice control
             self.voice_control.initialize()
-            logger.info("✓ Voice control initialized")
+            logger.info("[OK] Voice control initialized")
             
-            logger.info("✓ All systems initialized successfully")
+            logger.info("[OK] All systems initialized successfully")
             
         except Exception as e:
             logger.error(f"System initialization failed: {e}")

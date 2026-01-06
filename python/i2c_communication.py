@@ -70,7 +70,7 @@ class I2CCommunication:
             # Test communication by reading a byte
             self.bus.read_byte(self.arduino_address)
             self.is_connected = True
-            logger.info(f"✓ I2C communication established with Arduino at address 0x{self.arduino_address:02X}")
+            logger.info(f"[OK] I2C communication established with Arduino at address 0x{self.arduino_address:02X}")
         except Exception as e:
             logger.error(f"Failed to initialize I2C communication: {e}")
             self.is_connected = False

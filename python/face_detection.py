@@ -58,7 +58,7 @@ class AdvancedFaceDetection:
             # Fallback OpenCV cascade
             self.face_cascade = cv2.CascadeClassifier("face.xml")
             
-            logger.info("✓ AI models loaded successfully")
+            logger.info("[OK] AI models loaded successfully")
             
         except Exception as e:
             logger.warning(f"Could not load AI models: {e}")
@@ -82,7 +82,7 @@ class AdvancedFaceDetection:
         self.cap.set(cv2.CAP_PROP_CONTRAST, 0.5)
         self.cap.set(cv2.CAP_PROP_SATURATION, 0.5)
         
-        logger.info("✓ Camera initialized with optimized settings")
+        logger.info("[OK] Camera initialized with optimized settings")
     
     def analyze_lighting_conditions(self, frame):
         """Analyze lighting conditions and adapt detection parameters"""

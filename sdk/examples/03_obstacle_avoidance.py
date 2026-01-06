@@ -9,7 +9,7 @@ poppy = PoppyRobot.connect()
 # Register event handlers
 @poppy.on_obstacle
 def handle_obstacle(distance):
-    print(f"⚠ Obstacle detected at {distance}cm!")
+    print(f"[WARN] Obstacle detected at {distance}cm!")
     poppy.stop()
     poppy.backward(10)
     poppy.turn_right(45)
@@ -17,7 +17,7 @@ def handle_obstacle(distance):
 
 @poppy.on_battery_low
 def handle_battery():
-    print("🔋 Battery low, returning to base...")
+    print("[BATTERY] Battery low, returning to base...")
     # Add navigation to charging dock
 
 # Navigate around

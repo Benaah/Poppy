@@ -88,7 +88,7 @@ class WakeWordNode(Node):
             
             if keyword_index >= 0:
                 # Wake word detected!
-                self.get_logger().info('🎙️  Wake word detected!')
+                self.get_logger().info('[VOICE] Wake word detected!')
                 
                 # Publish wake event
                 wake_msg = Bool()

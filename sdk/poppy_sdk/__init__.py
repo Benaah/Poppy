@@ -58,7 +58,7 @@ class PoppyRobot:
             response = requests.get(f"{self.api_url}/status", timeout=5)
             if response.status_code == 200:
                 self.connected = True
-                print(f"✓ Connected to Poppy at {self.robot_address}")
+                print(f"[OK] Connected to Poppy at {self.robot_address}")
             else:
                 raise ConnectionError(f"Robot returned status {response.status_code}")
         except Exception as e:
@@ -136,7 +136,7 @@ class PoppyRobot:
         
         if response.status_code == 200:
             self._current_mode = mode_id
-            print(f"✓ Switched to {mode} mode")
+            print(f"[OK] Switched to {mode} mode")
         
     def get_status(self) -> dict:
         """Get current robot status"""
@@ -200,12 +200,12 @@ class PoppyRobot:
             )
             
             if response.status_code != 200:
-                print(f"⚠ Command failed: {response.text}")
+                print(f"[WARN] Command failed: {response.text}")
                 
         except requests.exceptions.Timeout:
-            print("⚠ Command timed out")
+            print("[WARN] Command timed out")
         except Exception as e:
-            print(f"⚠ Error sending command: {e}")
+            print(f"[WARN] Error sending command: {e}")
 
 
 class SequenceBuilder:
